@@ -53,10 +53,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-              So&apos;nggi postlar
+              Latest Posts
             </h2>
             <p className="text-muted-foreground mt-1">
-              Ekofaol talabalar faoliyati haqida yangiliklar
+              News about EcoActive students&apos; activities
             </p>
           </div>
           <PostsList posts={regularPosts} />

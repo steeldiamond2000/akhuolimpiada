@@ -22,10 +22,10 @@ export function HeroSection({ announcements }: HeroSectionProps) {
         {/* Hero Text */}
         <div className="text-center mb-10 md:mb-14">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg mb-4">
-            Al-Xorazmiy Universitetida ekologik tadbirlar
+            Ecological Events at Al-Khwarizmi University
           </h1>
           <p className="text-lg md:text-xl text-white/90 drop-shadow-md max-w-3xl mx-auto">
-            Ekofaol talabalar faoliyati va ekologik tadbirlar haqida so&apos;nggi yangiliklar
+            Latest news about EcoActive students&apos; activities and environmental events
           </p>
         </div>
 

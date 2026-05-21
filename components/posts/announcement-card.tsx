@@ -7,7 +7,7 @@ import { PostDetailModal } from "./post-detail-modal"
 import type { PostWithMedia } from "@/lib/types"
 import { ExternalLink, Pin, Bell, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import { uz } from "date-fns/locale"
+import { enUS } from "date-fns/locale"
 
 interface AnnouncementCardProps {
   post: PostWithMedia
@@ -20,7 +20,7 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
 
   const formattedDate = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
-    locale: uz,
+    locale: enUS,
   })
 
   const imageMedia = post.media?.filter(m => m.media_type === "image") || []
@@ -52,11 +52,11 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-white animate-bounce" />
-            <span className="text-white font-bold text-sm">E&apos;LON</span>
+            <span className="text-white font-bold text-sm">ANNOUNCEMENT</span>
             {post.pinned && (
               <span className="flex items-center gap-1 text-xs text-white bg-white/20 px-2 py-0.5 rounded-full">
                 <Pin className="w-3 h-3" />
-                Muhim
+                Important
               </span>
             )}
           </div>
@@ -115,12 +115,12 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
               )}
             </div>
             
-            {/* Batafsil button */}
+            {/* Read more button */}
             <button
               onClick={() => setDetailOpen(true)}
               className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex-shrink-0"
             >
-              Batafsil
+              Read More
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

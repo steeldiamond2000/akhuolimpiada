@@ -7,7 +7,7 @@ import { PostDetailModal } from "./post-detail-modal"
 import type { PostWithMedia } from "@/lib/types"
 import { ExternalLink, Pin, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import { uz } from "date-fns/locale"
+import { enUS } from "date-fns/locale"
 
 interface PostCardProps {
   post: PostWithMedia
@@ -20,7 +20,7 @@ export function PostCard({ post }: PostCardProps) {
 
   const formattedDate = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
-    locale: uz,
+    locale: enUS,
   })
 
   const imageMedia = post.media?.filter(m => m.media_type === "image" || m.media_type === "panorama") || []
@@ -55,7 +55,7 @@ export function PostCard({ post }: PostCardProps) {
               {post.pinned && (
                 <span className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                   <Pin className="w-3 h-3" />
-                  Muhim
+                  Important
                 </span>
               )}
             </div>
@@ -118,12 +118,12 @@ export function PostCard({ post }: PostCardProps) {
               )}
             </div>
             
-            {/* Batafsil button */}
+            {/* Read more button */}
             <button
               onClick={() => setDetailOpen(true)}
               className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex-shrink-0"
             >
-              Batafsil
+              Read More
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

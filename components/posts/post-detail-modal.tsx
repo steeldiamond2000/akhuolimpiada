@@ -6,7 +6,7 @@ import { ImageLightbox } from "./image-lightbox"
 import type { PostWithMedia } from "@/lib/types"
 import { X, ExternalLink, Pin, ArrowLeft } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import { uz } from "date-fns/locale"
+import { enUS } from "date-fns/locale"
 
 interface PostDetailModalProps {
   post: PostWithMedia
@@ -43,7 +43,7 @@ export function PostDetailModal({ post, isOpen, onClose }: PostDetailModalProps)
 
   const formattedDate = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
-    locale: uz,
+    locale: enUS,
   })
 
   const imageMedia = post.media?.filter(m => m.media_type === "image" || m.media_type === "panorama") || []
@@ -69,13 +69,13 @@ export function PostDetailModal({ post, isOpen, onClose }: PostDetailModalProps)
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">Orqaga</span>
+              <span className="text-sm font-medium">Back</span>
             </button>
             
             <button
               onClick={onClose}
               className="p-2 rounded-full hover:bg-muted transition-colors"
-              aria-label="Yopish"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -89,7 +89,7 @@ export function PostDetailModal({ post, isOpen, onClose }: PostDetailModalProps)
                 {post.pinned && (
                   <span className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                     <Pin className="w-3 h-3" />
-                    Muhim
+                    Important
                   </span>
                 )}
                 <time className="text-sm text-muted-foreground">

@@ -22,13 +22,13 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Al-Xorazmiy universiteti tomonidan tashkil etilgan ekologik faoliyat platformasi.
+              Ecological activity platform organized by Al-Khwarizmi University.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm sm:text-base">Foydali havolalar</h3>
+            <h3 className="font-semibold text-sm sm:text-base">Useful Links</h3>
             <nav className="flex flex-col gap-2">
               <a
                 href="https://akhu.uz/"
@@ -36,18 +36,18 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground hover:text-[#0077C8] transition-colors"
               >
-                Universitet sayti
+                University Website
               </a>
             </nav>
           </div>
 
           {/* Contact */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm sm:text-base">Bog&apos;lanish</h3>
+            <h3 className="font-semibold text-sm sm:text-base">Contact</h3>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Xorazm viloyati, Urganch shahri, Abulg&apos;ozi Baxodirxon ko&apos;chasi, 195</span>
+                <span>Khorezm region, Urgench city, Abulg&apos;ozi Bakhodirkhan street, 195</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 flex-shrink-0" />
@@ -66,7 +66,7 @@ export function Footer() {
 
           {/* Map */}
           <div className="space-y-4 sm:col-span-2 lg:col-span-1">
-            <h3 className="font-semibold text-sm sm:text-base">Bizning manzil</h3>
+            <h3 className="font-semibold text-sm sm:text-base">Our Location</h3>
             <div className="w-full h-48 sm:h-56 rounded-lg overflow-hidden border border-border">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1527.8!2d60.6280694520137!3d41.560387468360716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDMzJzM3LjQiTiA2MMKwMzcnNDEuMSJF!5e0!3m2!1suz!2s!4v1704000000000"
@@ -76,7 +76,7 @@ export function Footer() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Al-Xorazmiy universiteti joylashuvi"
+                title="Al-Khwarizmi University location"
               />
             </div>
           </div>
@@ -84,10 +84,10 @@ export function Footer() {
 
         <div className="mt-8 pt-6 sm:pt-8 border-t border-border text-center space-y-2">
           <p className="text-xs sm:text-sm text-muted-foreground">
-            &copy; 2026 EcoFaol Talabalar. Barcha huquqlar himoyalangan.
+            &copy; 2026 EcoFaol Talabalar. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Ushbu platforma Al-Xorazmiy universiteti IT departmenti tomonidan ishlab chiqilgan.
+            This platform was developed by Al-Khwarizmi University IT Department.
           </p>
           <p className="text-xs text-muted-foreground">
             <a 
