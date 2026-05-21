@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server"
-import { query, queryOne } from "@/lib/db"
+import { query } from "@/lib/db"
 import { getCurrentAdmin } from "@/lib/auth"
 import type { Post, PostMedia, PostLink, PostWithMedia } from "@/lib/types"
-import { put } from "@vercel/blob"
+import { writeFile, mkdir } from "fs/promises"
+import path from "path"
 
 // GET - Public endpoint for fetching published posts
 export async function GET() {
   try {
     const posts = await query<Post>(
-      "SELECT * FROM posts WHERE published = true ORDER BY created_at DESC"
+      `SELECT * FROM posts WHERE published = true 
+       ORDER BY pinned DESC, 
+       CASE WHEN post_type = 'announcement' THEN 0 WHEN post_type = 'ad' THEN 1 ELSE 2 END,
+       created_at DESC`
     )
 
     const postsWithMedia: PostWithMedia[] = await Promise.all(
@@ -43,7 +47,9 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const title = formData.get("title") as string
     const content = formData.get("content") as string
+    const postType = formData.get("post_type") as string || "post"
     const published = formData.get("published") === "true"
+    const pinned = formData.get("pinned") === "true"
     const mediaJson = formData.get("media") as string
     const linksJson = formData.get("links") as string
 
@@ -56,14 +62,19 @@ export async function POST(request: Request) {
 
     // Create post
     const [post] = await query<Post>(
-      `INSERT INTO posts (title, content, published, created_by)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO posts (title, content, post_type, published, pinned, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [title, content, published, admin.id]
+      [title, content, postType, published, pinned, admin.id]
     )
 
     // Handle media
     const mediaItems = JSON.parse(mediaJson || "[]")
+    const uploadDir = path.join(process.cwd(), "public", "uploads", "posts", String(post.id))
+    
+    // Create upload directory
+    await mkdir(uploadDir, { recursive: true })
+
     for (let i = 0; i < mediaItems.length; i++) {
       const item = mediaItems[i]
       let url = item.url
@@ -74,11 +85,12 @@ export async function POST(request: Request) {
         if (fileIndex !== undefined) {
           const file = formData.get(`file_${fileIndex}`) as File
           if (file) {
-            // Upload to Vercel Blob
-            const blob = await put(`posts/${post.id}/${Date.now()}-${file.name}`, file, {
-              access: "public",
-            })
-            url = blob.url
+            const bytes = await file.arrayBuffer()
+            const buffer = Buffer.from(bytes)
+            const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
+            const filePath = path.join(uploadDir, fileName)
+            await writeFile(filePath, buffer)
+            url = `/uploads/posts/${post.id}/${fileName}`
           }
         }
       }

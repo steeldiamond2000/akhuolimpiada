@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { RichTextEditor } from "./rich-text-editor"
 import { MediaUploader, type MediaItem } from "./media-uploader"
 import { 
@@ -9,12 +9,17 @@ import {
   ArrowLeft, 
   Eye, 
   EyeOff,
-  Link as LinkIcon,
   Plus,
   X,
-  Loader2
+  Loader2,
+  Pin,
+  FileText,
+  Megaphone,
+  Bell
 } from "lucide-react"
-import type { PostWithMedia } from "@/lib/types"
+import type { PostWithMedia, PostType } from "@/lib/types"
+import { POST_TYPE_LABELS } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 interface PostLink {
   id: string
@@ -24,15 +29,23 @@ interface PostLink {
 
 interface PostEditorProps {
   post?: PostWithMedia
+  defaultType?: PostType
 }
 
-export function PostEditor({ post }: PostEditorProps) {
+export function PostEditor({ post, defaultType }: PostEditorProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const typeFromUrl = searchParams.get("type") as PostType | null
+  
   const [saving, setSaving] = useState(false)
   
   const [title, setTitle] = useState(post?.title || "")
   const [content, setContent] = useState(post?.content || "")
+  const [postType, setPostType] = useState<PostType>(
+    post?.post_type || typeFromUrl || defaultType || "post"
+  )
   const [published, setPublished] = useState(post?.published ?? true)
+  const [pinned, setPinned] = useState(post?.pinned ?? false)
   const [media, setMedia] = useState<MediaItem[]>(
     post?.media?.map((m) => ({
       id: String(m.id),
@@ -75,13 +88,13 @@ export function PostEditor({ post }: PostEditorProps) {
     setSaving(true)
 
     try {
-      // Prepare form data for file uploads
       const formData = new FormData()
       formData.append("title", title)
       formData.append("content", content)
+      formData.append("post_type", postType)
       formData.append("published", String(published))
+      formData.append("pinned", String(pinned))
       
-      // Add media info
       const mediaInfo = media.map((m, index) => ({
         type: m.type,
         url: m.file ? `__FILE_${index}__` : m.url,
@@ -89,14 +102,12 @@ export function PostEditor({ post }: PostEditorProps) {
       }))
       formData.append("media", JSON.stringify(mediaInfo))
       
-      // Add actual files
       media.forEach((m, index) => {
         if (m.file) {
           formData.append(`file_${index}`, m.file)
         }
       })
 
-      // Add links
       formData.append(
         "links",
         JSON.stringify(links.filter((l) => l.title && l.url))
@@ -124,10 +135,22 @@ export function PostEditor({ post }: PostEditorProps) {
     }
   }
 
+  const typeIcons = {
+    post: FileText,
+    ad: Megaphone,
+    announcement: Bell,
+  }
+
+  const typeColors = {
+    post: "border-primary bg-primary/5 text-primary",
+    ad: "border-amber-500 bg-amber-50 text-amber-600",
+    announcement: "border-green-500 bg-green-50 text-green-600",
+  }
+
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <button
           type="button"
           onClick={() => router.back()}
@@ -137,15 +160,30 @@ export function PostEditor({ post }: PostEditorProps) {
           Orqaga
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setPinned(!pinned)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors",
+              pinned
+                ? "border-amber-500 text-amber-600 bg-amber-50"
+                : "border-border text-muted-foreground hover:bg-muted"
+            )}
+          >
+            <Pin className="w-4 h-4" />
+            {pinned ? "Muhim" : "Muhim qilish"}
+          </button>
+
           <button
             type="button"
             onClick={() => setPublished(!published)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors",
               published
                 ? "border-green-500 text-green-600 bg-green-50"
-                : "border-border text-muted-foreground"
-            }`}
+                : "border-border text-muted-foreground hover:bg-muted"
+            )}
           >
             {published ? (
               <>
@@ -175,6 +213,34 @@ export function PostEditor({ post }: PostEditorProps) {
         </div>
       </div>
 
+      {/* Post Type Selector */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-foreground mb-2">
+          Turi
+        </label>
+        <div className="flex gap-3 flex-wrap">
+          {(["post", "ad", "announcement"] as const).map((type) => {
+            const Icon = typeIcons[type]
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setPostType(type)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 transition-all font-medium",
+                  postType === type
+                    ? typeColors[type]
+                    : "border-border text-muted-foreground hover:border-muted-foreground/50"
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                {POST_TYPE_LABELS[type]}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       {/* Title */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-foreground mb-2">
@@ -185,7 +251,7 @@ export function PostEditor({ post }: PostEditorProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          placeholder="Post sarlavhasini kiriting..."
+          placeholder="Sarlavhani kiriting..."
           className="w-full px-4 py-3 text-lg border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
@@ -206,7 +272,7 @@ export function PostEditor({ post }: PostEditorProps) {
         <RichTextEditor
           content={content}
           onChange={setContent}
-          placeholder="Post matnini yozing..."
+          placeholder="Matnni yozing..."
         />
       </div>
 
@@ -230,7 +296,7 @@ export function PostEditor({ post }: PostEditorProps) {
           <div className="space-y-3">
             {links.map((link) => (
               <div key={link.id} className="flex gap-3 items-start">
-                <div className="flex-1 grid grid-cols-2 gap-3">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input
                     type="text"
                     value={link.title}

@@ -1,0 +1,5 @@
+# Uploads Directory
+
+Bu papka foydalanuvchilar yuklagan media fayllarni saqlash uchun ishlatiladi.
+
+**Muhim:** Bu papkani git'ga qo'shmang, `.gitignore` fayliga qo'shing.

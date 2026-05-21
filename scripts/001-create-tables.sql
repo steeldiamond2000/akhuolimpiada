@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     title VARCHAR(500) NOT NULL,
     content TEXT, -- HTML formatda rich text
+    post_type VARCHAR(20) DEFAULT 'post', -- 'post', 'ad', 'announcement'
     published BOOLEAN DEFAULT true,
+    pinned BOOLEAN DEFAULT false, -- muhim e'lonlar uchun
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER REFERENCES admins(id)
@@ -47,6 +49,8 @@ CREATE TABLE IF NOT EXISTS post_links (
 
 -- Indekslar
 CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published);
+CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type);
+CREATE INDEX IF NOT EXISTS idx_posts_pinned ON posts(pinned);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_post_media_post_id ON post_media(post_id);
 CREATE INDEX IF NOT EXISTS idx_post_links_post_id ON post_links(post_id);
@@ -72,3 +76,7 @@ CREATE TRIGGER update_posts_updated_at
     BEFORE UPDATE ON posts
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- Migration: Mavjud jadvalga yangi ustunlarni qo'shish (agar kerak bo'lsa)
+-- ALTER TABLE posts ADD COLUMN IF NOT EXISTS post_type VARCHAR(20) DEFAULT 'post';
+-- ALTER TABLE posts ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT false;

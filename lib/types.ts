@@ -7,11 +7,15 @@ export interface Admin {
   updated_at: Date
 }
 
+export type PostType = "post" | "ad" | "announcement"
+
 export interface Post {
   id: number
   title: string
   content: string | null
+  post_type: PostType
   published: boolean
+  pinned: boolean
   created_at: Date
   updated_at: Date
   created_by: number | null
@@ -39,4 +43,16 @@ export interface PostLink {
 export interface PostWithMedia extends Post {
   media: PostMedia[]
   links: PostLink[]
+}
+
+export const POST_TYPE_LABELS: Record<PostType, string> = {
+  post: "Post",
+  ad: "Reklama",
+  announcement: "E'lon",
+}
+
+export const POST_TYPE_COLORS: Record<PostType, string> = {
+  post: "bg-primary/10 text-primary",
+  ad: "bg-amber-100 text-amber-800",
+  announcement: "bg-green-100 text-green-800",
 }

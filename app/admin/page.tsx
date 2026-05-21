@@ -6,7 +6,7 @@ import type { Post, PostMedia, PostLink, PostWithMedia } from "@/lib/types"
 
 async function getPosts(): Promise<PostWithMedia[]> {
   const posts = await query<Post>(
-    "SELECT * FROM posts ORDER BY created_at DESC"
+    "SELECT * FROM posts ORDER BY pinned DESC, created_at DESC"
   )
 
   const postsWithMedia: PostWithMedia[] = await Promise.all(

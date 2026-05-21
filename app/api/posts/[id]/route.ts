@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { query, queryOne } from "@/lib/db"
 import { getCurrentAdmin } from "@/lib/auth"
 import type { Post } from "@/lib/types"
-import { put } from "@vercel/blob"
+import { writeFile, mkdir } from "fs/promises"
+import path from "path"
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -30,7 +31,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const formData = await request.formData()
     const title = formData.get("title") as string
     const content = formData.get("content") as string
+    const postType = formData.get("post_type") as string || existingPost.post_type
     const published = formData.get("published") === "true"
+    const pinned = formData.get("pinned") === "true"
     const mediaJson = formData.get("media") as string
     const linksJson = formData.get("links") as string
 
@@ -43,13 +46,16 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Update post
     await query(
-      `UPDATE posts SET title = $1, content = $2, published = $3
-       WHERE id = $4`,
-      [title, content, published, postId]
+      `UPDATE posts SET title = $1, content = $2, post_type = $3, published = $4, pinned = $5
+       WHERE id = $6`,
+      [title, content, postType, published, pinned, postId]
     )
 
     // Update media - delete old and insert new
     await query("DELETE FROM post_media WHERE post_id = $1", [postId])
+
+    const uploadDir = path.join(process.cwd(), "public", "uploads", "posts", String(postId))
+    await mkdir(uploadDir, { recursive: true })
 
     const mediaItems = JSON.parse(mediaJson || "[]")
     for (let i = 0; i < mediaItems.length; i++) {
@@ -62,10 +68,12 @@ export async function PUT(request: Request, { params }: RouteParams) {
         if (fileIndex !== undefined) {
           const file = formData.get(`file_${fileIndex}`) as File
           if (file) {
-            const blob = await put(`posts/${postId}/${Date.now()}-${file.name}`, file, {
-              access: "public",
-            })
-            url = blob.url
+            const bytes = await file.arrayBuffer()
+            const buffer = Buffer.from(bytes)
+            const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
+            const filePath = path.join(uploadDir, fileName)
+            await writeFile(filePath, buffer)
+            url = `/uploads/posts/${postId}/${fileName}`
           }
         }
       }

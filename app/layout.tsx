@@ -31,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uz" className="bg-white">
-      <body className={`${inter.className} antialiased bg-white`}>
+      <body className={`${inter.className} antialiased bg-white`} suppressHydrationWarning>
         {children}
       </body>
     </html>
