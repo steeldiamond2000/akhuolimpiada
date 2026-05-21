@@ -30,12 +30,6 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-sm sm:text-base">Foydali havolalar</h3>
             <nav className="flex flex-col gap-2">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-[#0077C8] transition-colors">
-                Biz haqimizda
-              </Link>
-              <Link href="/" className="text-sm text-muted-foreground hover:text-[#0077C8] transition-colors">
-                Tizimga kirish
-              </Link>
               <a
                 href="https://akhu.uz/"
                 target="_blank"
@@ -57,8 +51,8 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <a href="tel:+998556020002" className="hover:text-[#0077C8] transition-colors">
-                  +998 (55) 602-00-02
+                <a href="tel:+998622277171" className="hover:text-[#0077C8] transition-colors">
+                  +998 (62) 227-71-71
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -90,10 +84,21 @@ export function Footer() {
 
         <div className="mt-8 pt-6 sm:pt-8 border-t border-border text-center space-y-2">
           <p className="text-xs sm:text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} EcoFaol Talabalar. Barcha huquqlar himoyalangan.
+            &copy; 2026 EcoFaol Talabalar. Barcha huquqlar himoyalangan.
           </p>
           <p className="text-xs text-muted-foreground">
             Ushbu platforma Al-Xorazmiy universiteti IT departmenti tomonidan ishlab chiqilgan.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <a 
+              href="https://mansurbek.info" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-[#0077C8] transition-colors"
+            >
+              Mansurbek
+            </a>{" "}
+            Qazaqov
           </p>
         </div>
       </div>

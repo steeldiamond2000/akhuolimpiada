@@ -56,7 +56,7 @@ export default async function HomePage() {
               So&apos;nggi postlar
             </h2>
             <p className="text-muted-foreground mt-1">
-              Ekofaol talabalar faoliyati
+              Ekofaol talabalar faoliyati haqida yangiliklar
             </p>
           </div>
           <PostsList posts={regularPosts} />

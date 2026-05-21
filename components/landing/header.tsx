@@ -47,11 +47,11 @@ export function Header() {
               info@akhu.uz
             </a>
             <a
-              href="tel:+998556020002"
+              href="tel:+998622277171"
               className="flex items-center gap-1.5 text-xs font-bold text-white hover:text-white/80 transition-colors"
             >
               <Phone className="h-3 w-3" />
-              +998 (55) 602-00-02
+              +998 (62) 227-71-71
             </a>
           </div>
         </div>
