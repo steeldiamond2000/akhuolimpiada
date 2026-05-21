@@ -1,1 +1,0 @@
-ALTER TABLE subjects ADD COLUMN IF NOT EXISTS sample_file_url TEXT;

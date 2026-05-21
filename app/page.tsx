@@ -1,17 +1,13 @@
 import { Header } from "@/components/landing/header"
-import { HeroSection } from "@/components/landing/hero-section"
-import { VideoSection } from "@/components/landing/video-section"
-import { CountdownSection } from "@/components/landing/countdown-section"
+import { PostsSection } from "@/components/landing/posts-section"
 import { Footer } from "@/components/landing/footer"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <main className="flex-1">
-        <HeroSection />
-        <CountdownSection />
-        <VideoSection />
+        <PostsSection />
       </main>
       <Footer />
     </div>

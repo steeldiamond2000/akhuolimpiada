@@ -1,30 +1,27 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Space_Grotesk } from "next/font/google"
-import { Toaster } from "@/components/ui/sonner"
+import { Inter } from "next/font/google"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Al-Xorazmiy Olimpiadasi | Online Test Platformasi",
+  title: "EcoFaol Talabalar | Al-Khwarizmi University",
   description:
-    "Al-Xorazmiy nomidagi Urganch Davlat Universiteti tomonidan tashkil etilgan olimpiada platformasi. Dasturlash, Fizika, Suniy intellekt va Matematika fanlaridan test topshiring.",
-  keywords: ["olimpiada", "al-xorazmiy", "test", "urganch", "universitet", "dasturlash", "fizika", "matematika"],
-  authors: [{ name: "UrDU" }],
+    "Al-Khwarizmi University talabalari tomonidan amalga oshirilayotgan ekologik tadbirlar, hasharlar, daraxt ekish aksiyalari va ekologik seminarlar platformasi.",
+  keywords: ["ekologiya", "al-khwarizmi", "universitet", "talabalar", "yashil kampus", "ekologik tadbirlar"],
+  authors: [{ name: "Al-Khwarizmi University IT Department" }],
   openGraph: {
-    title: "Al-Xorazmiy Olimpiadasi",
-    description: "Online test platformasi - Dasturlash, Fizika, Suniy intellekt, Matematika",
+    title: "EcoFaol Talabalar",
+    description: "Ekologik faoliyat platformasi - Al-Khwarizmi University",
     type: "website",
   },
-    generator: 'v0.app'
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0f172a",
+  themeColor: "#0077C8",
 }
 
 export default function RootLayout({
@@ -33,10 +30,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="uz">
-      <body className={`${inter.className} antialiased`}>
+    <html lang="uz" className="bg-white">
+      <body className={`${inter.className} antialiased bg-white`}>
         {children}
-        <Toaster position="top-center" />
       </body>
     </html>
   )
