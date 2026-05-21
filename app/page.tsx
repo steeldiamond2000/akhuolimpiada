@@ -1,6 +1,7 @@
 import { Header } from "@/components/landing/header"
+import { HeroSection } from "@/components/posts/hero-section"
 import { PostsList } from "@/components/posts/posts-list"
-import { AnnouncementsBanner } from "@/components/posts/announcements-banner"
+import { AdPopupWrapper } from "@/components/posts/ad-popup-wrapper"
 import { Footer } from "@/components/landing/footer"
 import { query } from "@/lib/db"
 import type { Post, PostMedia, PostLink, PostWithMedia } from "@/lib/types"
@@ -9,9 +10,7 @@ async function getPosts(): Promise<PostWithMedia[]> {
   try {
     const posts = await query<Post>(
       `SELECT * FROM posts WHERE published = true 
-       ORDER BY pinned DESC, 
-       CASE WHEN post_type = 'announcement' THEN 0 WHEN post_type = 'ad' THEN 1 ELSE 2 END,
-       created_at DESC`
+       ORDER BY pinned DESC, created_at DESC`
     )
 
     const postsWithMedia: PostWithMedia[] = await Promise.all(
@@ -39,31 +38,35 @@ export default async function HomePage() {
   const posts = await getPosts()
   
   const announcements = posts.filter(p => p.post_type === "announcement")
-  const regularPosts = posts.filter(p => p.post_type !== "announcement")
+  const ads = posts.filter(p => p.post_type === "ad")
+  const regularPosts = posts.filter(p => p.post_type === "post")
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      {/* Announcements Banner */}
-      {announcements.length > 0 && (
-        <AnnouncementsBanner announcements={announcements} />
-      )}
+      {/* Hero Section with Background Image and Announcements */}
+      <HeroSection announcements={announcements} />
       
-      <main className="flex-1 py-8 md:py-12">
+      {/* Posts Section */}
+      <main className="flex-1 py-8 md:py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Al-Xorazmiy Universitetida ekologik tadbirlar
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Ekofaol talabalar faoliyati va ekologik tadbirlar haqida so&apos;nggi yangiliklar
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+              So&apos;nggi postlar
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              Ekofaol talabalar faoliyati
             </p>
           </div>
           <PostsList posts={regularPosts} />
         </div>
       </main>
+      
       <Footer />
+      
+      {/* Ad Popup */}
+      <AdPopupWrapper ads={ads} />
     </div>
   )
 }

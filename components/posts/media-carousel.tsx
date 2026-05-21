@@ -2,24 +2,36 @@
 
 import { useState, useCallback, useEffect } from "react"
 import useEmblaCarousel from "embla-carousel-react"
-import { ChevronLeft, ChevronRight, Play } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { PostMedia } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 interface MediaCarouselProps {
   media: PostMedia[]
   className?: string
+  onImageClick?: (index: number) => void
 }
 
-export function MediaCarousel({ media, className }: MediaCarouselProps) {
+export function MediaCarousel({ media, className, onImageClick }: MediaCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
-  const scrollTo = useCallback((index: number) => emblaApi?.scrollTo(index), [emblaApi])
+  const scrollPrev = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    emblaApi?.scrollPrev()
+  }, [emblaApi])
+  
+  const scrollNext = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    emblaApi?.scrollNext()
+  }, [emblaApi])
+  
+  const scrollTo = useCallback((index: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    emblaApi?.scrollTo(index)
+  }, [emblaApi])
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return
@@ -46,6 +58,13 @@ export function MediaCarousel({ media, className }: MediaCarouselProps) {
     return match?.[1] || ""
   }
 
+  const handleImageClick = (e: React.MouseEvent, index: number) => {
+    if (onImageClick) {
+      e.stopPropagation()
+      onImageClick(index)
+    }
+  }
+
   return (
     <div className={cn("relative group", className)}>
       <div className="overflow-hidden rounded-lg" ref={emblaRef}>
@@ -53,7 +72,10 @@ export function MediaCarousel({ media, className }: MediaCarouselProps) {
           {media.map((item, index) => (
             <div key={item.id} className="flex-[0_0_100%] min-w-0">
               {item.media_type === "youtube" ? (
-                <div className="relative aspect-video bg-black">
+                <div 
+                  className="relative aspect-video bg-black"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <iframe
                     src={`https://www.youtube.com/embed/${getYouTubeId(item.url)}`}
                     className="absolute inset-0 w-full h-full"
@@ -62,21 +84,29 @@ export function MediaCarousel({ media, className }: MediaCarouselProps) {
                   />
                 </div>
               ) : item.media_type === "panorama" ? (
-                <div className="relative aspect-[2/1] overflow-hidden">
+                <div 
+                  className="relative aspect-[2/1] overflow-hidden cursor-pointer"
+                  onClick={(e) => handleImageClick(e, index)}
+                >
                   <img
                     src={item.url}
                     alt={item.caption || `Media ${index + 1}`}
-                    className="w-full h-full object-cover cursor-move"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     draggable={false}
                   />
+                  <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
                 </div>
               ) : (
-                <div className="relative aspect-[16/10]">
+                <div 
+                  className="relative aspect-[16/10] cursor-pointer overflow-hidden"
+                  onClick={(e) => handleImageClick(e, index)}
+                >
                   <img
                     src={item.url}
                     alt={item.caption || `Media ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
                 </div>
               )}
               {item.caption && (
@@ -125,7 +155,7 @@ export function MediaCarousel({ media, className }: MediaCarouselProps) {
           {media.map((_, index) => (
             <button
               key={index}
-              onClick={() => scrollTo(index)}
+              onClick={(e) => scrollTo(index, e)}
               className={cn(
                 "w-2.5 h-2.5 rounded-full transition-all",
                 index === selectedIndex
