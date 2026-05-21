@@ -30,18 +30,24 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
     setLightboxOpen(true)
   }
 
-  // Strip HTML tags for preview text
+  // Strip HTML tags for preview text (SSR-safe using regex)
   const stripHtml = (html: string) => {
-    const tmp = document.createElement("div")
-    tmp.innerHTML = html
-    return tmp.textContent || tmp.innerText || ""
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/\s+/g, " ")
+      .trim()
   }
 
   const previewText = post.content ? stripHtml(post.content) : ""
 
   return (
     <>
-      <article className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-xl border-2 border-green-400/50 overflow-hidden backdrop-blur-sm flex flex-col h-[400px]">
+      <article className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-xl border-2 border-green-400/50 overflow-hidden backdrop-blur-sm flex flex-col h-auto min-h-[450px]">
         {/* Header with announcement badge */}
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
@@ -76,9 +82,14 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
             </div>
           )}
 
-          {/* Content preview */}
+          {/* Content preview - show up to 8 lines */}
           {previewText && (
-            <p className="text-sm text-gray-600 line-clamp-2 flex-shrink-0">
+            <p className="text-sm text-gray-700 leading-relaxed" style={{ 
+              display: "-webkit-box",
+              WebkitLineClamp: 8,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden"
+            }}>
               {previewText}
             </p>
           )}

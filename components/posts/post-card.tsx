@@ -30,19 +30,24 @@ export function PostCard({ post }: PostCardProps) {
     setLightboxOpen(true)
   }
 
-  // Strip HTML tags for preview text
+  // Strip HTML tags for preview text (SSR-safe using regex)
   const stripHtml = (html: string) => {
-    const tmp = document.createElement("div")
-    tmp.innerHTML = html
-    return tmp.textContent || tmp.innerText || ""
+    return html
+      .replace(/<[^>]*>/g, "") // Remove HTML tags
+      .replace(/&nbsp;/g, " ") // Replace &nbsp;
+      .replace(/&amp;/g, "&")  // Replace &amp;
+      .replace(/&lt;/g, "<")   // Replace &lt;
+      .replace(/&gt;/g, ">")   // Replace &gt;
+      .replace(/&quot;/g, '"') // Replace &quot;
+      .replace(/\s+/g, " ")    // Normalize whitespace
+      .trim()
   }
 
   const previewText = post.content ? stripHtml(post.content) : ""
-  const hasLongContent = previewText.length > 120
 
   return (
     <>
-      <article className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-[420px]">
+      <article className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-auto min-h-[500px]">
         {/* Header */}
         <div className="p-4 pb-2 flex-shrink-0">
           <div className="flex items-start justify-between gap-3 mb-1">
@@ -74,10 +79,15 @@ export function PostCard({ post }: PostCardProps) {
           </div>
         )}
 
-        {/* Content preview */}
-        <div className="p-4 pt-3 flex-1 overflow-hidden flex flex-col">
+        {/* Content preview - show up to 10 lines */}
+        <div className="p-4 pt-3 flex-1 flex flex-col">
           {previewText && (
-            <p className="text-sm text-muted-foreground line-clamp-3 flex-shrink-0">
+            <p className="text-sm text-foreground leading-relaxed" style={{ 
+              display: "-webkit-box",
+              WebkitLineClamp: 10,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden"
+            }}>
               {previewText}
             </p>
           )}
