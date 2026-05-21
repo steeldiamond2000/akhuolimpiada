@@ -3,8 +3,9 @@
 import { useState } from "react"
 import { MediaCarousel } from "./media-carousel"
 import { ImageLightbox } from "./image-lightbox"
+import { PostDetailModal } from "./post-detail-modal"
 import type { PostWithMedia } from "@/lib/types"
-import { ExternalLink, Pin, Bell } from "lucide-react"
+import { ExternalLink, Pin, Bell, ChevronRight } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { uz } from "date-fns/locale"
 
@@ -15,6 +16,7 @@ interface AnnouncementCardProps {
 export function AnnouncementCard({ post }: AnnouncementCardProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [detailOpen, setDetailOpen] = useState(false)
 
   const formattedDate = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
@@ -28,11 +30,20 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
     setLightboxOpen(true)
   }
 
+  // Strip HTML tags for preview text
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement("div")
+    tmp.innerHTML = html
+    return tmp.textContent || tmp.innerText || ""
+  }
+
+  const previewText = post.content ? stripHtml(post.content) : ""
+
   return (
     <>
-      <article className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-xl border-2 border-green-400/50 overflow-hidden backdrop-blur-sm">
+      <article className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-xl border-2 border-green-400/50 overflow-hidden backdrop-blur-sm flex flex-col h-[400px]">
         {/* Header with announcement badge */}
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-white animate-bounce" />
             <span className="text-white font-bold text-sm">E&apos;LON</span>
@@ -48,52 +59,69 @@ export function AnnouncementCard({ post }: AnnouncementCardProps) {
           </time>
         </div>
 
-        <div className="p-4 md:p-5">
+        <div className="p-4 flex flex-col flex-1 overflow-hidden">
           {/* Title */}
-          <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-3">
+          <h2 className="text-base font-bold text-gray-800 mb-2 line-clamp-2 flex-shrink-0">
             {post.title}
           </h2>
 
           {/* Media with click handler */}
           {post.media && post.media.length > 0 && (
-            <div 
-              className="cursor-pointer"
-              onClick={() => handleImageClick(0)}
-            >
+            <div className="flex-shrink-0 mb-3">
               <MediaCarousel 
                 media={post.media} 
                 onImageClick={handleImageClick}
+                compact
               />
             </div>
           )}
 
-          {/* Content */}
-          {post.content && (
-            <div
-              className="mt-4 prose prose-sm max-w-none prose-headings:font-bold prose-a:text-green-600"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+          {/* Content preview */}
+          {previewText && (
+            <p className="text-sm text-gray-600 line-clamp-2 flex-shrink-0">
+              {previewText}
+            </p>
           )}
 
-          {/* Links */}
-          {post.links && post.links.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {post.links.map((link) => (
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Footer */}
+          <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-green-200 flex-shrink-0">
+            {/* Links preview */}
+            <div className="flex items-center gap-1 flex-wrap overflow-hidden">
+              {post.links && post.links.length > 0 && (
                 <a
-                  key={link.id}
-                  href={link.url}
+                  href={post.links[0].url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-colors"
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium hover:bg-green-200 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  {link.title}
+                  <ExternalLink className="w-3 h-3" />
+                  {post.links[0].title}
                 </a>
-              ))}
+              )}
             </div>
-          )}
+            
+            {/* Batafsil button */}
+            <button
+              onClick={() => setDetailOpen(true)}
+              className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex-shrink-0"
+            >
+              Batafsil
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </article>
+
+      {/* Detail Modal */}
+      <PostDetailModal
+        post={post}
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+      />
 
       {/* Lightbox */}
       <ImageLightbox

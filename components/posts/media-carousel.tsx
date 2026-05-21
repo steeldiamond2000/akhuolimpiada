@@ -10,9 +10,10 @@ interface MediaCarouselProps {
   media: PostMedia[]
   className?: string
   onImageClick?: (index: number) => void
+  compact?: boolean
 }
 
-export function MediaCarousel({ media, className, onImageClick }: MediaCarouselProps) {
+export function MediaCarousel({ media, className, onImageClick, compact = false }: MediaCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [canScrollPrev, setCanScrollPrev] = useState(false)
@@ -85,7 +86,10 @@ export function MediaCarousel({ media, className, onImageClick }: MediaCarouselP
                 </div>
               ) : item.media_type === "panorama" ? (
                 <div 
-                  className="relative aspect-[2/1] overflow-hidden cursor-pointer"
+                  className={cn(
+                    "relative overflow-hidden cursor-pointer",
+                    compact ? "aspect-video" : "aspect-[2/1]"
+                  )}
                   onClick={(e) => handleImageClick(e, index)}
                 >
                   <img
@@ -98,7 +102,10 @@ export function MediaCarousel({ media, className, onImageClick }: MediaCarouselP
                 </div>
               ) : (
                 <div 
-                  className="relative aspect-[16/10] cursor-pointer overflow-hidden"
+                  className={cn(
+                    "relative cursor-pointer overflow-hidden",
+                    compact ? "aspect-video" : "aspect-[16/10]"
+                  )}
                   onClick={(e) => handleImageClick(e, index)}
                 >
                   <img
@@ -109,7 +116,7 @@ export function MediaCarousel({ media, className, onImageClick }: MediaCarouselP
                   <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
                 </div>
               )}
-              {item.caption && (
+              {!compact && item.caption && (
                 <p className="text-sm text-muted-foreground mt-2 text-center px-4">
                   {item.caption}
                 </p>
